@@ -1,0 +1,130 @@
+<!-- IF S_ALLOW_CDN -->
+<!-- INCLUDECSS //maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css -->
+<!-- ELSE -->
+<!-- INCLUDECSS ./../../ext/forumhulp/uploadstyle/vendor/font-awesome/css/font-awesome.min.css -->
+<!-- ENDIF -->
+<!-- INCLUDECSS css/upload.css -->
+<!-- INCLUDECSS css/jquery.simpledialog.css -->
+
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<h1>{L_ACP_UPLOAD_STYLE_TITLE} <a href="{U_ACTION}&amp;action=details" class="simpledialog"><i class="fa fa-info-circle"></i></a></h1>
+
+<p>{L_ACP_UPLOAD_STYLE_TITLE_EXPLAIN}</p>
+
+<!-- IF S_UPLOADED -->
+<!-- INCLUDEJS js/php_file_tree_jquery.js -->
+    <hr />
+	<a href="{S_ACTION_BACK}" id="back_to_upload">{L_STYLE_UPLOAD_BACK}</a>
+	<h1><i class="fa fa-check" id="uploaded_ok"></i>{S_UPLOADED} - {L_STYLE_UPLOADED}<a href="{S_ACTION}" id="enable_uploaded"><i class="fa fa-power-off"></i> {L_STYLE_ENABLE}</a></h1>
+	<div>
+		<!-- IF .authors -->
+		<br />Authors:
+		<!-- BEGIN authors -->
+		{authors.AUTHOR}<!-- IF not authors.S_LAST_ROW -->, <!-- ENDIF -->
+		<!-- END authors -->
+		<!-- ENDIF -->
+		<span id="show_filetree" style="display: <!-- IF README_MARKDOWN -->block;<!-- ELSE -->none;<!-- ENDIF -->">{L_SHOW_FILETREE}</span>
+		<span style="display: <!-- IF not README_MARKDOWN -->block;<!-- ELSE -->none;<!-- ENDIF -->" id="hide_filetree">{L_HIDE_FILETREE}</span>
+	</div>
+    <div id="filetree"<!-- IF not README_MARKDOWN --> style="display:block;"<!-- ENDIF -->>
+        <div id="filetreenames">{FILETREE}</div>
+        <div id="filecontent"><div class="filename">{FILENAME} <a href="#" onclick="selectCode(this); return false;" style="float:right;font-size:8px;margin: 5px 15px 1px 0;">Select all</a></div><div class="filecontent">{CONTENT}</div></div>
+        <br style="clear:both" />
+    </div>
+	<!-- IF README_MARKDOWN -->
+	<div id="markdown">{README_MARKDOWN}</div>
+	<!-- ENDIF -->
+<!-- ELSE -->
+	<hr />
+	<!-- IF UPLOAD_ERROR -->
+	<div class="errorbox">{UPLOAD_ERROR}</div>
+	<!-- ENDIF -->
+    <form action="{U_UPLOAD}" method="post" id="ext_upload" autocomplete="off" {S_FORM_ENCTYPE}>
+        <fieldset>
+            <div id="ext_upload_content">
+                <p>{L_STYLE_UPLOAD_EXPLAIN}</p>
+                <input type="text" id="remote_upload" name="remote_upload" />
+                <input type="button" id="button_upload" style="display:none;" value="{L_BROWSE}" onclick="browseFile();" />
+                <input type="file" id="extupload" name="extupload" accept=".zip" onchange="setFileName();" />
+                {S_FORM_TOKEN}
+                {S_HIDDEN_FIELDS}
+                <br />
+                <br />
+                <input type="checkbox" name="keepext" id="keepext" title="Keep extension" />
+                <label for="keepext">{L_STYLE_UPLOAD_SAVE_ZIP}</label>
+                <input class="button1" type="submit" name="submit" value="{L_UPLOAD}" id="submit" />
+            </div>
+            <i id="upload" class="fa fa-spinner fa-3x fa-spin"></i>
+        </fieldset>
+    </form>
+    <!-- IF .zip -->
+    <table style="width:100%; table-layout: fixed; margin-top:16px;">
+    <tbody>
+    <tr>
+        <td class="row3" colspan="2"><strong>{L_ZIP_UPLOADED}</strong></td>
+    </tr>
+    <!-- BEGIN zip -->
+    <tr onmouseover="this.className='ruleractueel';" onmouseout="this.className='column';" class="column">
+		<td style="width:50%;"><div style="width:100%; overflow:hidden; text-overflow:ellipsis;white-space:nowrap; font-size:100%;"><strong>{zip.META_DISPLAY_NAME}</strong></div></td>
+        <td style="text-align: right;">
+			<a href="{zip.U_UPLOAD}">{L_ACP_UPLOAD_STYLE_UNPACK}</a> | <a href="{zip.U_DELETE}" data-ajax="row_delete">{L_STYLE_ZIP_DELETE}</a>
+		</td>
+    </tr>
+    <!-- END zip -->
+    <!-- IF .pagination or TOTAL_POSTS -->
+    <tr class="ext_disabled"><td colspan="2">
+        <div class="pagination">
+            <!-- IF .pagination -->
+                <!-- INCLUDE pagination.html -->
+            <!-- ELSE -->
+                &bull; {PAGE_NUMBER}
+            <!-- ENDIF -->
+        </div>
+    </td></tr>
+    <!-- ENDIF -->
+    </tbody>
+    </table>
+    <!-- ENDIF -->
+    <!-- IF .styles_list -->
+    <table id="ext_table">
+        <tr>
+            <td class="row3" colspan="6"><strong>{L_STYLE_AVAILABLE}</strong></td>
+        </tr>
+        <tr class="ext_disabled">
+            <td style="border-bottom:#BABABA thin solid;">{L_STYLE_NAME}</td>
+            <td style="border-bottom:#BABABA thin solid;">{L_COPYRIGHT}</td>
+            <td style="text-align: center;border-bottom:#BABABA thin solid;">{L_STYLE_VERSION}</td>
+            <td style="text-align: center;border-bottom:#BABABA thin solid;">{L_PHPBB_VERSION}</td>
+            <td style="text-align: center;border-bottom:#BABABA thin solid;">{L_INSTALLED}</td>
+            <td style="text-align: center;border-bottom:#BABABA thin solid;">{L_STYLE_DELETE_INSTALL}</td>
+        </tr>
+       <!-- BEGIN styles_list -->
+        <tr onmouseover="this.className='ruleractueel';" onmouseout="this.className='column';" class="column"<!-- IF styles_list.COMMENT --> style="color:red;" title="{styles_list.COMMENT}"<!-- ENDIF --><!-- IF styles_list.DEFAULT -->title="Default style"<!-- ENDIF -->>
+            <td style="<!-- IF styles_list.DEFAULT -->font-weight:bold;<!-- ENDIF --> padding-{S_CONTENT_FLOW_BEGIN}: {styles_list.PADDING}px;">{styles_list.STYLE_NAME}</td>
+            <td>{styles_list.STYLE_COPYRIGHT}</td>
+            <td style="text-align: center;">{styles_list.STYLE_VERSION}</td>
+            <td style="text-align: center;">{styles_list.PHPBB_VERSION}</td>
+            <td style="text-align: center;"><!-- IF styles_list.STYLE_ACTIVE -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
+            <td style="text-align: center;">
+			<!-- BEGIN actions -->
+				<!-- IF styles_list.actions.S_ROW_COUNT > 0 --> | <!-- ENDIF -->
+				<!-- IF styles_list.actions.U_ACTION -->
+					<a href="{styles_list.actions.U_ACTION}"{styles_list.actions.U_ACTION_ATTR}>{styles_list.actions.L_ACTION}</a>
+				<!-- ENDIF -->
+				{styles_list.actions.HTML}
+			<!-- END actions -->
+            </td>
+        </tr>
+        <!-- END styles_list -->
+        </tbody>
+    </table>
+    <!-- ENDIF -->
+<!-- ENDIF -->
+<br style="clear:both" />
+
+<!-- INCLUDEJS js/jquery.simpledialog.js -->
+<!-- INCLUDEJS js/upload.js -->
+<!-- INCLUDE overall_footer.html -->
