@@ -43,7 +43,7 @@ class uploadstyle_module
 		$this->user->add_lang_ext('forumhulp/uploadstyle', 'upload');
 		$this->page_title = $this->user->lang['ACP_UPLOAD_STYLE_TITLE'];
 		$this->tpl_name = 'acp_upload';
-		
+
 		$this->default_style = $this->config['default_style'];
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
 		$this->ext_dir = $this->phpbb_root_path . 'ext';
@@ -446,7 +446,7 @@ class uploadstyle_module
 			}
 		}
 	}
-	
+
 	/**
 	* Lists all the available styles and dumps to the template
 	*
@@ -491,7 +491,7 @@ class uploadstyle_module
 			}
 			closedir($dp);
 		}
-		
+
 		// Find styles that can be installed
 		foreach ($dirs as $dir)
 		{
@@ -574,24 +574,7 @@ class uploadstyle_module
 				$this->list_style($style, 0);
 			}
 		}
-
-/*
-		foreach ($styles as $style)
-		{
-			$template->assign_block_vars('disabled', array(
-				'META_DISPLAY_NAME'	=> $style['style_name'],
-				'META_VERSION'		=> $style['style_copyright'],
-				'PARENT'			=> ($style['style_parent_id']) ? true : false,
-				'STYLE_VERSION'		=> $style['style_version'],
-				'PHPBB_VERSION'		=> $style['phpbb_version'],
-				'INSTALLED'			=> $style['style_active'],
-				'DEFAULT'			=> ($style['style_id'] == $config['default_style']) ? true : false,
-				'NOTE'				=> $style['_note'],
-				'U_DELETE'			=> (!$style['style_active']) ? $this->main_link . '&amp;action=delete&amp;ext_name=' . urlencode($style['style_name']) : '',
-				'U_INSTALL'			=> (!$style['style_active'] && isset($installed_names[$style['_inherit_name']])) ? '/adm/index.php?i=acp_styles&sid=' . $user->data['session_id'] . '&mode=install&action=install&hash=' . generate_link_hash('install') . '&dir=' . $style['style_name'] : ''
-			));	
-		}
-*/	}
+	}
 
 	/**
 	* Sort styles
