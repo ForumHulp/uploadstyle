@@ -408,14 +408,14 @@ class uploadstyle_module
 		if (!$style['style_id'])
 		{
 			$actions[] = array(
-				'U_ACTION'	=> '/adm/index.php?i=acp_styles&sid=' . $this->user->data['session_id'] . '&mode=install&action=install&hash=' . generate_link_hash('install') . '&dir=' . $style['style_name'],
+				'U_ACTION'	=> '/adm/index.php?i=acp_styles&sid=' . $this->user->data['session_id'] . '&mode=install&action=install&hash=' . generate_link_hash('install') . '&dir=' . $style['style_path'],
 				'L_ACTION'	=> $this->user->lang['STYLE_INSTALL'],
 			);
 		}
 		if (!$style['style_active'])
 		{
 			$actions[] = array(
-				'U_ACTION'	=> $this->main_link . '&amp;action=delete&amp;ext_name=' . urlencode($style['style_name']),
+				'U_ACTION'	=> $this->main_link . '&amp;action=delete&amp;ext_name=' . $style['style_path'],
 				'L_ACTION'	=> $this->user->lang['STYLE_DELETE'],
 			);
 		}
@@ -768,7 +768,7 @@ class uploadstyle_module
 		$this->template->assign_vars(array(
 			'S_UPLOADED'		=> $display_name,
 			'FILETREE'			=> \filetree::php_file_tree($this->phpbb_root_path . 'styles/' . $destination, $display_name, $this->main_link),
-			'S_ACTION'			=> $this->phpbb_root_path . 'adm/index.php?i=acp_extensions&amp;sid=' .$this->user->session_id . '&amp;mode=main&amp;action=enable_pre&amp;ext_name=' . urlencode($destination),
+			'S_ACTION'			=> $this->phpbb_root_path . '/adm/index.php?i=acp_styles&sid=' . $this->user->session_id . '&mode=install&action=install&hash=' . generate_link_hash('install') . '&dir=' . urlencode($destination),
 			'S_ACTION_BACK'		=> $this->main_link,
 			'U_ACTION'			=> $this->u_action,
 			'README_MARKDOWN'	=> $readme,
