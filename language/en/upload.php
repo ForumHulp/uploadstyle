@@ -27,6 +27,7 @@ $lang = array_merge($lang, array(
 	'STYLE_UPLOAD_INIT_FAIL'			=> 'There was an error when initialising the style upload process.',
 	'STYLE_NOT_WRITABLE'				=> 'The ext/ directory is not writable. This is required for “Upload Style” to work properly. Please adjust your permissions or settings and try again.',
 	'STYLE_UPLOAD_ERROR'				=> 'The style wasn\'t uploaded. Please confirm that you upload the true style zip file and try again.',
+	'EXT_UPLOAD_ERROR'					=> 'The style wasn\'t uploaded. Please confirm that you upload the true style zip file and try again.',
 	'NO_UPLOAD_FILE'					=> 'No file specified or there was an error during the upload process.',
 	'NOT_AN_STYLE'						=> 'The uploaded zip file is not a phpBB style. The file was not saved on the server.',
 

@@ -123,11 +123,11 @@ class uploadstyle_module
 			case 'upload_remote':
 				if (!is_writable($this->ext_dir))
 				{
-					$this->trigger_error($this->user->lang('EXT_NOT_WRITABLE'));
+					$this->trigger_error($this->user->lang('EXT_NOT_WRITABLE'), E_USER_WARNING);
 				}
 				else if (!$this->upload_ext($action))
 				{
-					$this->trigger_error($this->user->lang('EXT_UPLOAD_ERROR'));
+					$this->trigger_error($this->user->lang('EXT_UPLOAD_ERROR'), E_USER_WARNING);
 				}
 				$this->list_available_styles($phpbb_extension_manager);
 				$this->template->assign_vars(array(
@@ -151,7 +151,7 @@ class uploadstyle_module
 						$this->rrmdir($this->phpbb_root_path . 'styles/' . $dir);
 						if($this->request->is_ajax())
 						{
-							trigger_error($this->user->lang('STYLE_DELETE_SUCCESS'));
+							trigger_error($this->user->lang('STYLE_DELETE_SUCCESS'), E_USER_WARNING);
 						}
 						else
 						{
@@ -172,7 +172,7 @@ class uploadstyle_module
 						$this->rrmdir($this->phpbb_root_path . 'ext/' . $zip_name);
 						if($this->request->is_ajax())
 						{
-							trigger_error($this->user->lang('STYLE_ZIP_DELETE_SUCCESS'));
+							trigger_error($this->user->lang('STYLE_ZIP_DELETE_SUCCESS'), E_USER_WARNING);
 						}
 						else
 						{
