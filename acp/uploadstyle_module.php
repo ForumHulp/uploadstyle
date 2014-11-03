@@ -127,7 +127,7 @@ class uploadstyle_module
 				}
 				else if (!$this->upload_ext($action))
 				{
-					$this->trigger_error($this->user->lang('EXT_UPLOAD_ERROR'), E_USER_WARNING);
+					//$this->trigger_error($this->user->lang('EXT_UPLOAD_ERROR'), E_USER_WARNING);
 				}
 				$this->list_available_styles($phpbb_extension_manager);
 				$this->template->assign_vars(array(
@@ -210,7 +210,7 @@ class uploadstyle_module
 		{
 			if ($ff != '.' && $ff != '..')
 			{
-				if (strpos($ff,'.zip') && in_array($ff, array('Orange_BBEs-Orange_BBEs.zip', 'prosilver_se.zip', 'style-PBTech-master.zip')))
+				if (strpos($ff,'.zip') && in_array($ff, array('Orange_BBEs-Orange_BBEs.zip', 'prosilver_se.zip', 'style-PBTech-master.zip', 'we_universal')))
 				{
 					$zip_aray[] = array(
 						'META_DISPLAY_NAME'	=> $ff,
@@ -331,14 +331,14 @@ class uploadstyle_module
 			{
 				if ($file != '.' && $file != '..')
 				{
-					$this->rrmdir($dir . '/' . $file);
+					@$this->rrmdir($dir . '/' . $file);
 				}
 			}
-			rmdir($dir);
+			@rmdir($dir);
 		}
 		else if (file_exists($dir))
 		{
-			unlink($dir);
+			@unlink($dir);
 		}
 	}
 
@@ -674,7 +674,7 @@ class uploadstyle_module
 		}
 		else if ($action == 'upload_remote')
 		{
-			$file = $upload->remote_upload($this->request->variable('remote_upload', ''));
+			$file = $this->remote_upload($upload, $this->request->variable('remote_upload', ''));
 		}
 
 		if($action != 'upload_local')
@@ -777,7 +777,7 @@ class uploadstyle_module
 		));
 
 		// Remove the uploaded archive file
-		if (($this->request->variable('keepext', false)) == false && $action != 'upload_local')
+		if (($this->request->variable('keepext', false)) == false/* && $action != 'upload_local' */)
 		{
 			$file->remove();
 		}
@@ -817,5 +817,160 @@ class uploadstyle_module
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Remote upload method
+	 * Uploads file from given url
+	 *
+	 * @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
+	 * @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
+	 * @return object $file Object "filespec" is returned, all further operations can be done with this object
+	 * @access public
+	 */
+	function remote_upload($files, $upload_url, \phpbb\mimetype\guesser $mimetype_guesser = null)
+	{
+		global $user, $phpbb_root_path;
+
+		$upload_ary = array();
+		$upload_ary['local_mode'] = true;
+
+		$upload_from_phpbb = preg_match('#^(https://)www.phpbb.com/customise/db/download/([0-9]*?)$#i', $upload_url, $match_phpbb);
+
+		if (!preg_match('#^(https?://).*?\.(' . implode('|', $files->allowed_extensions) . ')$#i', $upload_url, $match) && !$upload_from_phpbb)
+		{
+			$file = new \fileerror($user->lang[$files->error_prefix . 'URL_INVALID']);
+			return $file;
+		}
+
+		if (empty($match[2]) && empty($match_phpbb[2]))
+		{
+			$file = new \fileerror($user->lang[$files->error_prefix . 'URL_INVALID']);
+			return $file;
+		}
+
+		$url = parse_url($upload_url);
+
+		$host = $url['host'];
+		$path = $url['path'];
+		$port = (!empty($url['port'])) ? (int) $url['port'] : 80;
+
+		$upload_ary['type'] = 'application/octet-stream';
+
+		$url['path'] = explode('.', $url['path']);
+		$ext = array_pop($url['path']);
+
+		$url['path'] = implode('', $url['path']);
+		$upload_ary['name'] = utf8_basename($url['path']) . (($ext) ? '.' . $ext : '');
+		$filename = $url['path'];
+		$filesize = 0;
+
+		$remote_max_filesize = $files->max_filesize;
+		if (!$remote_max_filesize)
+		{
+			$max_filesize = @ini_get('upload_max_filesize');
+
+			if (!empty($max_filesize))
+			{
+				$unit = strtolower(substr($max_filesize, -1, 1));
+				$remote_max_filesize = (int) $max_filesize;
+
+				switch ($unit)
+				{
+					case 'g':
+						$remote_max_filesize *= 1024;
+					// no break
+					case 'm':
+						$remote_max_filesize *= 1024;
+					// no break
+					case 'k':
+						$remote_max_filesize *= 1024;
+					// no break
+				}
+			}
+		}
+
+		$errno = 0;
+		$errstr = '';
+
+		if (!($fsock = @fopen($upload_url, "r")))
+		{
+			$file = new \fileerror($user->lang[$files->error_prefix . 'NOT_UPLOADED']);
+			return $file;
+		}
+
+		// Make sure $path not beginning with /
+		if (strpos($path, '/') === 0)
+		{
+			$path = substr($path, 1);
+		}
+
+		$get_info = false;
+		$data = '';
+		$length = false;
+		$timer_stop = time() + $files->upload_timeout;
+
+		while (!@feof($fsock))
+		{
+			if ($length)
+			{
+				// Don't attempt to read past end of file if server indicated length
+				$block = @fread($fsock, min($length - $filesize, 1024));
+			}
+			else
+			{
+				$block = @fread($fsock, 1024);
+			}
+
+			$filesize += strlen($block);
+
+			if ($remote_max_filesize && $filesize > $remote_max_filesize)
+			{
+				$max_filesize = get_formatted_filesize($remote_max_filesize, false);
+
+				$file = new \fileerror(sprintf($user->lang[$files->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
+				return $file;
+			}
+
+			$data .= $block;
+
+			// Cancel upload if we exceed timeout
+			if (time() >= $timer_stop)
+			{
+				$file = new \fileerror($user->lang[$files->error_prefix . 'REMOTE_UPLOAD_TIMEOUT']);
+				return $file;
+			}
+		}
+		@fclose($fsock);
+
+		if (empty($data))
+		{
+			$file = new \fileerror($user->lang[$files->error_prefix . 'EMPTY_REMOTE_DATA']);
+			return $file;
+		}
+
+		$tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : $phpbb_root_path . 'cache';
+		$filename = tempnam($tmp_path, unique_id() . '-');
+
+		if (!($fp = @fopen($filename, 'wb')))
+		{
+			$file = new \fileerror($user->lang[$files->error_prefix . 'NOT_UPLOADED']);
+			return $file;
+		}
+
+		$upload_ary['size'] = fwrite($fp, $data);
+		fclose($fp);
+		unset($data);
+
+		$upload_ary['tmp_name'] = $filename;
+
+		$file = new \filespec($upload_ary, $files, $mimetype_guesser);
+		if ($upload_from_phpbb)
+		{
+			$file->extension = 'zip';
+		}
+		$files->common_checks($file);
+
+		return $file;
 	}
 }
