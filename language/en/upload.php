@@ -19,15 +19,15 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ACP_UPLOAD_STYLE_TITLE'				=> 'Upload Style',
-	'ACP_UPLOAD_STYLE_TITLE_EXPLAIN'		=> 'Upload Styles enables you to upload styles\' zip files or delete styles\' folders from the server.<br />With this extension you can install/update/delete styles without using FTP. If the uploaded style already exists, it will be updated with the uploaded files.',
+	'ACP_UPLOAD_STYLE_TITLE_EXPLAIN'		=> 'Upload Styles enables you to upload styles’ zip files or delete styles’ folders from the server.<br />With this extension you can install/update/delete styles without using FTP. If the uploaded style already exists, it will be updated with the uploaded files.',
 	'UPLOAD'							=> 'Upload',
 	'BROWSE'							=> 'Browse...',
 	'STYLE_UPLOAD'					=> 'Upload Style',
-	'STYLE_UPLOAD_EXPLAIN'			=> 'Here you can upload a zipped style package containing the necessary files to perform installation from your local computer or a remote server. “Upload Style” will then attempt to unzip the file and have it ready for installation.<br />Choose a file or type a link in the fields below.<br />NOTE: Some servers (for example, github.com) don\'t support remote uploads.',
+	'STYLE_UPLOAD_EXPLAIN'			=> 'Here you can upload a zipped style package containing the necessary files to perform installation from your local computer or a remote server. “Upload Style” will then attempt to unzip the file and have it ready for installation.<br />Choose a file or type a link in the fields below.<br />NOTE: Some servers (for example, github.com) don’t support remote uploads.',
 	'STYLE_UPLOAD_INIT_FAIL'			=> 'There was an error when initialising the style upload process.',
-	'STYLE_NOT_WRITABLE'				=> 'The ext/ directory is not writable. This is required for “Upload Style” to work properly. Please adjust your permissions or settings and try again.',
-	'STYLE_UPLOAD_ERROR'				=> 'The style wasn\'t uploaded. Please confirm that you upload the true style zip file and try again.',
-	'EXT_UPLOAD_ERROR'					=> 'The style wasn\'t uploaded. Please confirm that you upload the true style zip file and try again.',
+	'STYLE_NOT_WRITABLE'				=> 'The styles/ directory is not writeable. This is required for “Upload Style” to work properly. Please adjust your permissions or settings and try again.',
+	'STYLE_UPLOAD_ERROR'				=> 'The style wasn’t uploaded. Please confirm that you upload the true style zip file and try again.',
+	'EXT_UPLOAD_ERROR'					=> 'The style wasn’t uploaded. Please confirm that you upload the true style zip file and try again.',
 	'NO_UPLOAD_FILE'					=> 'No file specified or there was an error during the upload process.',
 	'NOT_AN_STYLE'						=> 'The uploaded zip file is not a phpBB style. The file was not saved on the server.',
 
@@ -46,10 +46,10 @@ $lang = array_merge($lang, array(
 
 	'STYLE_ZIP_DELETE'					=> 'Delete zip file',
 	'STYLE_ZIP_DELETE_CONFIRM'			=> 'Are you sure that you want to delete the zip file “%s”?',
-	'STYLE_ZIP_DELETE_SUCCESS'			=> 'Style\'s zip file was deleted successfully.',
+	'STYLE_ZIP_DELETE_SUCCESS'			=> 'Style’s zip file was deleted successfully.',
 
 	'ACP_UPLOAD_STYLE_ERROR_DEST'		=> 'No destination folder in the uploaded zip file or phpBB version not correct. The file was not saved on the server.',
-	'ACP_UPLOAD_STYLE_ERROR_COMP'		=> 'style.cfg wasn\'t found in the uploaded zip file. The file was not saved on the server.',
+	'ACP_UPLOAD_STYLE_ERROR_COMP'		=> 'style.cfg wasn’t found in the uploaded zip file. The file was not saved on the server.',
 
 	'UPLOAD_STYLE_DEVELOPERS'			=> 'Developers',
 
@@ -63,7 +63,7 @@ $lang = array_merge($lang, array(
 		'14'		=> 'Malloc failure.',
 		'9'			=> 'No such file.',
 		'19'		=> 'Not a zip archive.',
-		'11'		=> 'Can\'t open file.',
+		'11'		=> 'Can’t open file.',
 		'5'			=> 'Read error.',
 		'4'			=> 'Seek error.'
 	),
