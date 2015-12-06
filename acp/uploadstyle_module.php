@@ -37,12 +37,13 @@ class uploadstyle_module
 		$this->request = $request;
 		$this->cache = $cache;
 		$this->config = $config;
+		$this->phpbb_container = $phpbb_container;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 
 		$this->user->add_lang_ext('forumhulp/uploadstyle', 'upload');
 		$this->page_title = $this->user->lang['ACP_UPLOAD_STYLE_TITLE'];
-		$this->tpl_name = 'acp_upload';
+		$this->tpl_name = 'acp_uploadstyle';
 
 		$this->default_style = $this->config['default_style'];
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
@@ -66,48 +67,10 @@ class uploadstyle_module
 		switch ($action)
 		{
 			case 'details':
-				$this->user->add_lang(array('install', 'acp/extensions', 'migrator'));
-				$ext_name = 'forumhulp/uploadstyle';
-				$md_manager = new \phpbb\extension\metadata_manager($ext_name, $this->config, $phpbb_extension_manager, $this->template, $this->user, $this->phpbb_root_path);
-				try
-				{
-					$this->metadata = $md_manager->get_metadata('all');
-				}
-				catch(\phpbb\extension\exception $e)
-				{
-					trigger_error($e, E_USER_WARNING);
-				}
-
-				$md_manager->output_template_data();
-
-				try
-				{
-					$updates_available = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
-
-					$this->template->assign_vars(array(
-						'S_UP_TO_DATE'		=> empty($updates_available),
-						'S_VERSIONCHECK'	=> true,
-						'UP_TO_DATE_MSG'	=> $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
-					));
-
-					foreach ($updates_available as $branch => $version_data)
-					{
-						$this->template->assign_block_vars('updates_available', $version_data);
-					}
-				}
-				catch (\RuntimeException $e)
-				{
-					$this->template->assign_vars(array(
-						'S_VERSIONCHECK_STATUS'			=> $e->getCode(),
-						'VERSIONCHECK_FAIL_REASON'		=> ($e->getMessage() !== $this->user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
-					));
-				}
-
-				$this->template->assign_vars(array(
-					'U_BACK'				=> $this->u_action . '&amp;action=list',
-				));
-
+				$user->add_lang_ext('forumhulp/uploadstyle', 'info_acp_uploadstyle');
 				$this->tpl_name = 'acp_ext_details';
+				$phpbb_container->get('forumhulp.helper')->detail('forumhulp/uploadstyle');
+				return;
 				break;
 
 			case 'upload':
@@ -611,34 +574,6 @@ class uploadstyle_module
 	}
 
 	/**
-	* Check the version and return the available updates.
-	*
-	* @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
-	* @param bool $force_update Ignores cached data. Defaults to false.
-	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return string
-	* @throws RuntimeException
-	*/
-	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false)
-	{
-		$meta = $md_manager->get_metadata('all');
-
-		if (!isset($meta['extra']['version-check']))
-		{
-			throw new \RuntimeException($this->user->lang('NO_VERSIONCHECK'), 1);
-		}
-
-		$version_check = $meta['extra']['version-check'];
-
-		$version_helper = new \phpbb\version_helper($cache, $config, new \phpbb\file_downloader(), $user);
-		$version_helper->set_current_version($meta['version']);
-		$version_helper->set_file_location($version_check['host'], $version_check['directory'], $version_check['filename']);
-		$version_helper->force_stability($this->config['extension_force_unstable'] ? 'unstable' : null);
-
-		return $updates = $version_helper->get_suggested_updates($force_update, $force_cache);
-	}
-
-	/**
 	 *
 	 * @package automod
 	 * @copyright (c) 2008 phpBB Group
@@ -649,9 +584,21 @@ class uploadstyle_module
 	{
 		$this->listzip();
 		$this->user->add_lang('posting');  // For error messages
-		include($this->phpbb_root_path . 'includes/functions_upload.' . $this->php_ext);
-		$upload = new \fileupload();
-		$upload->set_allowed_extensions(array('zip'));	// Only allow ZIP files
+
+		if (version_compare($this->config['version'], '3.2.*', '<'))
+		{
+			include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
+			$upload = new \fileupload();
+			$upload->set_allowed_extensions(array('zip'));
+		} else
+		{
+			$upload = $this->phpbb_container->get('files.factory')->get('upload')
+				->set_error_prefix('AVATAR_')
+				->set_allowed_extensions(array('zip'))
+				->set_max_filesize(0)
+				->set_allowed_dimensions(0,0,0,0)
+				->set_disallowed_content((isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
+		}
 
 		if (!is_writable($this->ext_dir))
 		{
@@ -670,7 +617,7 @@ class uploadstyle_module
 		// Proceed with the upload
 		if ($action == 'upload')
 		{
-			$file = $upload->form_upload('extupload');
+			$file = (version_compare($this->config['version'], '3.2.*', '<')) ? $upload->form_upload('extupload') : $upload->handle_upload('files.types.form', 'extupload');
 		}
 		else if ($action == 'upload_remote')
 		{
@@ -679,7 +626,7 @@ class uploadstyle_module
 
 		if($action != 'upload_local')
 		{
-			if (empty($file->filename))
+			if ($file->get('realname') == '')
 			{
 				$this->trigger_error((sizeof($file->error) ? implode('<br />', $file->error) : $this->user->lang['NO_UPLOAD_FILE']) . $this->back_link, E_USER_WARNING);
 				return false;
@@ -700,7 +647,7 @@ class uploadstyle_module
 				$this->trigger_error(implode('<br />', $file->error) . $this->back_link, E_USER_WARNING);
 				return false;
 			}
-			$dest_file = $file->destination_file;
+			$dest_file = $file->get('destination_file');
 		}
 		else
 		{

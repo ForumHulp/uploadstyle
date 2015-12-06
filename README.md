@@ -19,8 +19,6 @@ You can install this extension on the latest copy of the develop branch ([phpBB 
 5. Click `Enable`.
 6. Or use our ([Upload Extensions](https://github.com/ForumHulp/upload)).
 
-Note: This extension is in development. Installation is only recommended for testing purposes and is not supported on live boards. This extension will be officially released following phpBB 3.1.0.
-
 ## Usage
 ### Upload Style
 To upload styles navigate in the ACP to `Style management -> Upload style`.

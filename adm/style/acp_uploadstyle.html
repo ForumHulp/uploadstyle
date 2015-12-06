@@ -1,11 +1,12 @@
 <!-- IF S_ALLOW_CDN -->
 <!-- INCLUDECSS //maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css -->
 <!-- ELSE -->
-<!-- INCLUDECSS ./../../ext/forumhulp/uploadstyle/vendor/font-awesome/css/font-awesome.min.css -->
+<!-- INCLUDECSS {ROOT_PATH}ext/forumhulp/helper/css/font-awesome.min.css -->
 <!-- ENDIF -->
 <!-- INCLUDECSS css/upload.css -->
-<!-- INCLUDECSS css/jquery.simpledialog.css -->
-
+<!-- INCLUDECSS {ROOT_PATH}ext/forumhulp/helper/css/jquery.simpledialog.css -->
+<!-- INCLUDECSS {ROOT_PATH}ext/forumhulp/helper/css/ext_details.css -->
+<!-- INCLUDECSS css/upload.css -->
 <!-- INCLUDE overall_header.html -->
 
 <a name="maincontent"></a>
@@ -125,6 +126,6 @@
 <!-- ENDIF -->
 <br style="clear:both" />
 
-<!-- INCLUDEJS js/jquery.simpledialog.js -->
+<!-- INCLUDEJS {ROOT_PATH}ext/forumhulp/helper/js/jquery.simpledialog.js -->
 <!-- INCLUDEJS js/upload.js -->
 <!-- INCLUDE overall_footer.html -->
