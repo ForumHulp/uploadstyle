@@ -112,7 +112,7 @@ class uploadstyle_module
 						$extensions = sizeof(array_filter(glob($this->phpbb_root_path . 'styles/' . $dir . '/*'), 'is_dir'));
 						$dir = ($extensions == 1) ? $dir : $ext_name;
 						$this->rrmdir($this->phpbb_root_path . 'styles/' . $dir);
-						if($this->request->is_ajax())
+						if ($this->request->is_ajax())
 						{
 							trigger_error($this->user->lang('STYLE_DELETE_SUCCESS'), E_USER_WARNING);
 						}
@@ -120,7 +120,8 @@ class uploadstyle_module
 						{
 							redirect($this->phpbb_root_path . 'adm/index.php?i=' . $id . '&amp;sid=' . $this->user->session_id . '&amp;mode=' . $mode);
 						}
-					} else {
+					} else
+					{
 						confirm_box(false, $this->user->lang('STYLE_DELETE_CONFIRM', $ext_name), build_hidden_fields(array(
 							'i'			=> $id,
 							'mode'		=> $mode,
@@ -133,15 +134,15 @@ class uploadstyle_module
 					if (confirm_box(true))
 					{
 						$this->rrmdir($this->phpbb_root_path . 'ext/' . $zip_name);
-						if($this->request->is_ajax())
+						if ($this->request->is_ajax())
 						{
 							trigger_error($this->user->lang('STYLE_ZIP_DELETE_SUCCESS'), E_USER_WARNING);
-						}
-						else
+						} else
 						{
 							redirect($this->phpbb_root_path . 'adm/index.php?i=' . $id . '&amp;sid=' .$this->user->session_id . '&amp;mode=' . $mode);
 						}
-					} else {
+					} else
+					{
 						confirm_box(false, $this->user->lang('STYLE_ZIP_DELETE_CONFIRM', $zip_name), build_hidden_fields(array(
 							'i'			=> $id,
 							'mode'		=> $mode,
@@ -169,7 +170,7 @@ class uploadstyle_module
 		global $phpbb_container;
 		$zip_aray = array();
 		$ffs = scandir($this->phpbb_root_path . 'ext/');
-		foreach($ffs as $ff)
+		foreach ($ffs as $ff)
 		{
 			if ($ff != '.' && $ff != '..')
 			{
@@ -192,7 +193,7 @@ class uploadstyle_module
 		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $zip_count, $per_page, $start);
 
 		uasort($zip_aray, array($this, 'sort_extension_meta_data_table'));
-		for($i = $start; $i < $zip_count && $i < $start + $per_page; $i++)
+		for ($i = $start; $i < $zip_count && $i < $start + $per_page; $i++)
 		{
 			$this->template->assign_block_vars('zip', $zip_aray[$i]);
 		}
@@ -203,7 +204,7 @@ class uploadstyle_module
 		global $style_path;
 		$ffs = scandir($dir);
 		$style_path = false;
-		foreach($ffs as $ff)
+		foreach ($ffs as $ff)
 		{
 			if ($ff != '.' && $ff != '..')
 			{
@@ -212,7 +213,7 @@ class uploadstyle_module
 					$style_path = $dir . '/' . $ff;
 					break;
 				}
-				if(is_dir($dir.'/'.$ff))
+				if (is_dir($dir.'/'.$ff))
 				{
 					$this->get_style_path($dir . '/' . $ff);
 				}
@@ -316,7 +317,7 @@ class uploadstyle_module
 		{
 			mkdir($dst, 0775, true);
 			$files = scandir($src);
-			foreach($files as $file)
+			foreach ($files as $file)
 			{
 				if ($file != '.' && $file != '..')
 				{
@@ -385,7 +386,7 @@ class uploadstyle_module
 
 		// Assign template variables
 		$this->template->assign_block_vars('styles_list', $row);
-		foreach($actions as $action)
+		foreach ($actions as $action)
 		{
 			$this->template->assign_block_vars('styles_list.actions', $action);
 		}
@@ -684,7 +685,7 @@ class uploadstyle_module
 		if (!isset($style_cfg['name']))
 		{
 			$this->rrmdir($this->phpbb_root_path . 'ext/tmp');
-			if($action != 'upload_local')
+			if ($action != 'upload_local')
 			{
 				$file->remove();
 			}
@@ -708,7 +709,8 @@ class uploadstyle_module
 		if ($string !== false)
 		{
 			$readme = highlight_string($string, true);
-		} else {
+		} else
+		{
 			$readme = false;
 		}
 
