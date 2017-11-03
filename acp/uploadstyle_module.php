@@ -624,14 +624,14 @@ class uploadstyle_module
 			$file = $this->remote_upload($upload, $this->request->variable('remote_upload', ''));
 		}
 
-		if($action != 'upload_local')
+		if ($action != 'upload_local')
 		{
 			if ($file->get('realname') == '')
 			{
 				$this->trigger_error((sizeof($file->error) ? implode('<br />', $file->error) : $this->user->lang['NO_UPLOAD_FILE']) . $this->back_link, E_USER_WARNING);
 				return false;
 			}
-			else if ($file->init_error || sizeof($file->error))
+			else if (sizeof($file->error))
 			{
 				$file->remove();
 				$this->trigger_error((sizeof($file->error) ? implode('<br />', $file->error) : $this->user->lang['EXT_UPLOAD_INIT_FAIL']) . $this->back_link, E_USER_WARNING);
